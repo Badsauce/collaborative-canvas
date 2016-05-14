@@ -1,9 +1,16 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+app.use('/static', express.static('public'));
+
 app.get('/', function(req, res){
-  res.sendFile('index.html');
+  res.sendFile(__dirname + '/canvas.html');
+});
+
+app.get('/debug', function(req, res){
+  res.sendFile(__dirname + '/index.html');
 });
 
 io.on('connection', function(socket){
