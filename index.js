@@ -14,12 +14,13 @@ app.get('/debug', function(req, res){
 });
 
 io.on('connection', function(socket){
-  socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
+  socket.on('draw history', function(history){
+    console.log(history);
+    io.emit('draw history', JSON.stringify(history));
   });
 });
 
 
 http.listen(3000, function(){
-  console.log('listening on *:3000');
+  console.log('listening on localhost:3000');
 });

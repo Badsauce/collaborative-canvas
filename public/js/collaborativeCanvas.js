@@ -3,6 +3,9 @@ var painting = document.getElementById('CanvasContainer');
 var canvas = document.getElementById('CollaborativeCanvas');
 var clearButton = document.getElementById('clearHistory');
 
+//initalize socket.io
+var socket = io();
+
 //initalize the canvas
 var context = canvas.getContext('2d');
 
@@ -67,6 +70,7 @@ function getHistory(){
 
 function sendHistory(){
   var sentHistoryLength = unsentHistory.length
+
   return $.ajax({
     method: "POST",
     url: "/collaborative_canvas/history",
@@ -145,5 +149,16 @@ canvas.addEventListener('mouseleave', function() {
 
 clearButton.addEventListener('click', clearHistory , false);
 
-getHistory()
-syncTimerID = window.setTimeout(synchronizeHistory, 500);
+function emitUnsentHistory(){
+  console.log('Sending ' + unsentHistory.length + ' of unsent history.');
+  socket.emit('draw history', unsentHistory);
+
+  syncTimerID = window.setTimeout(emitUnsentHistory, 500);
+}
+
+socket.on('chat message', function(msg){
+  $('#messages').append($('<li>').text(msg));
+});
+
+// getHistory()
+syncTimerID = window.setTimeout(emitUnsentHistory, 500);
