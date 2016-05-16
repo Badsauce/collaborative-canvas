@@ -16,7 +16,7 @@ app.get('/debug', function(req, res){
 io.on('connection', function(socket){
   socket.on('draw history', function(history){
     console.log(history);
-    io.emit('draw history', JSON.stringify(history));
+    io.emit('draw history', history);
   });
 });
 

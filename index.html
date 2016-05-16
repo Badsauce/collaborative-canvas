@@ -28,7 +28,7 @@
         return false;
       });
       socket.on('draw history', function(history){
-        $('#messages').append($('<li>').text(history));
+        $('#messages').append($('<li>').text(JSON.stringify(history)));
       });
     </script>
   </body>

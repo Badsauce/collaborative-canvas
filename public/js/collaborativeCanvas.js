@@ -63,7 +63,7 @@ function getHistory(){
     if(data.history){
       serverHistory = data.history;
     }
-    redraw()
+    redraw();
     console.log('History set to server history');
   });
 }
@@ -150,14 +150,29 @@ canvas.addEventListener('mouseleave', function() {
 clearButton.addEventListener('click', clearHistory , false);
 
 function emitUnsentHistory(){
-  console.log('Sending ' + unsentHistory.length + ' of unsent history.');
-  socket.emit('draw history', unsentHistory);
+  if(unsentHistory.length > 0){
+    var sentHistoryLength = unsentHistory.length
+
+    console.log('Sending ' + sentHistoryLength + ' of unsent history objects.');
+    socket.emit('draw history', unsentHistory);
+
+    if(sentHistoryLength < unsentHistory.length) {
+      console.log('Slicing '+sentHistoryLength+' from unsent history of '+unsentHistory.length);
+      unsentHistory = unsentHistory.slice(sentHistoryLength);
+    }
+    else {
+      console.log('No unsent history clearing unsent array');
+      unsentHistory = new Array();
+    }
+  }
 
   syncTimerID = window.setTimeout(emitUnsentHistory, 500);
 }
 
-socket.on('chat message', function(msg){
-  $('#messages').append($('<li>').text(msg));
+socket.on('draw history', function(history){
+  console.log("Got " + history.length + ' of history objects.');
+  serverHistory.push.apply(serverHistory, history);
+  redraw();
 });
 
 // getHistory()
