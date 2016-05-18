@@ -17,9 +17,9 @@ canvas.height = parseInt(paint_style.getPropertyValue('height'));
 //Object for capturing mouse movements within the canvas
 var mouse = {x: 0, y: 0};
 
-var canvasHistory = new Array();
-var unsentHistory = new Array();
-var serverHistory = new Array();
+var canvasHistory = [];
+var unsentHistory = [];
+var serverHistory = [];
 
 var color = '#00CC99';
 var isPainting;
@@ -29,8 +29,8 @@ var syncTimerID;
 
 function addClick(x, y, dragging, brush_color)
 {
-  canvasHistory.push({"x":x,"y":y,"drag":dragging,"color":brush_color})
-  unsentHistory.push({"x":x,"y":y,"drag":dragging,"color":brush_color})
+  canvasHistory.push({"x":x,"y":y,"drag":dragging,"color":brush_color});
+  unsentHistory.push({"x":x,"y":y,"drag":dragging,"color":brush_color});
 }
 
 function redraw(){
@@ -69,7 +69,7 @@ function getHistory(){
 }
 
 function sendHistory(){
-  var sentHistoryLength = unsentHistory.length
+  var sentHistoryLength = unsentHistory.length;
 
   return $.ajax({
     method: "POST",
@@ -83,7 +83,7 @@ function sendHistory(){
     }
     else {
       console.log('No unsent history clearing unsent array');
-      unsentHistory = new Array();
+      unsentHistory = [];
     }
     console.log('History written, receiving updated history');
     getHistory().done( function(){
@@ -93,9 +93,9 @@ function sendHistory(){
 }
 
 function clearHistory(){
-  canvasHistory = new Array();
-  unsentHistory = new Array();
-  serverHistory = new Array();
+  canvasHistory = [];
+  unsentHistory = [];
+  serverHistory = [];
 
   window.clearTimeout(syncTimerID);
 
@@ -151,7 +151,7 @@ clearButton.addEventListener('click', clearHistory , false);
 
 function emitUnsentHistory(){
   if(unsentHistory.length > 0){
-    var sentHistoryLength = unsentHistory.length
+    var sentHistoryLength = unsentHistory.length;
 
     console.log('Sending ' + sentHistoryLength + ' of unsent history objects.');
     socket.emit('draw history', unsentHistory);
@@ -162,7 +162,7 @@ function emitUnsentHistory(){
     }
     else {
       console.log('No unsent history clearing unsent array');
-      unsentHistory = new Array();
+      unsentHistory = [];
     }
   }
 

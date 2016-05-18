@@ -5,5 +5,13 @@
   "dependencies": {
     "express": "^4.10.2",
     "socket.io": "^1.4.6"
+  },
+  "devDependencies": {
+    "jshint": "^2.9.2"
+  },
+  "scripts": {
+    "jshint-public": "jshint public/js/*",
+    "jshint-index": "jshint index.js",
+    "jshint": "npm run jshint-index && npm run jshint-public"
   }
 }
