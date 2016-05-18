@@ -7,7 +7,8 @@
     "socket.io": "^1.4.6"
   },
   "devDependencies": {
-    "jshint": "^2.9.2"
+    "jshint": "^2.9.2",
+    "nodemon": "^1.9.2"
   },
   "scripts": {
     "jshint-public": "jshint public/js/*",
