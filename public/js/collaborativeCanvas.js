@@ -92,24 +92,17 @@ function sendHistory(){
   });
 }
 
+function clearHistoryButton(){
+  clearHistory();
+  socket.emit('clear history', 0);
+}
+
 function clearHistory(){
   canvasHistory = [];
   unsentHistory = [];
   serverHistory = [];
 
-  window.clearTimeout(syncTimerID);
-
-  return $.ajax({
-    method: "POST",
-    url: "/collaborative_canvas/clear_history",
-    data: JSON.stringify({'id':id}),
-    contentType: 'application/json',
-  }).done(function( data ) {
-    console.log('History written, receiving updated history');
-    getHistory().done( function(){
-      syncTimerID = window.setTimeout(synchronizeHistory, 500);
-    });
-  });
+  redraw();
 }
 
 function synchronizeHistory(){
@@ -147,7 +140,7 @@ canvas.addEventListener('mouseleave', function() {
   isPainting = false;
 }, false);
 
-clearButton.addEventListener('click', clearHistory , false);
+clearButton.addEventListener('click', clearHistoryButton , false);
 
 function emitUnsentHistory(){
   if(unsentHistory.length > 0){
@@ -174,6 +167,8 @@ socket.on('draw history', function(history){
   serverHistory.push.apply(serverHistory, history);
   redraw();
 });
+
+socket.on('clear history', clearHistory);
 
 // getHistory()
 syncTimerID = window.setTimeout(emitUnsentHistory, 500);

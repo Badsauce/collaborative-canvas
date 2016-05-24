@@ -19,6 +19,10 @@ io.on('connection', function(socket){
     console.log(history);
     io.emit('draw history', history);
   });
+  socket.on('clear history', function(){
+    console.log("Clear History");
+    io.emit('clear history', 0);
+  });
 });
 
 
