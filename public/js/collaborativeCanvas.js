@@ -42,6 +42,7 @@ function redraw(){
 
   drawHistory(canvasHistory);
   drawHistory(serverHistory);
+  emitUnsentHistory();
 }
 
 function drawHistory(history){
@@ -158,8 +159,6 @@ function emitUnsentHistory(){
       unsentHistory = [];
     }
   }
-
-  syncTimerID = window.setTimeout(emitUnsentHistory, 500);
 }
 
 socket.on('draw history', function(history){
@@ -169,6 +168,3 @@ socket.on('draw history', function(history){
 });
 
 socket.on('clear history', clearHistory);
-
-// getHistory()
-syncTimerID = window.setTimeout(emitUnsentHistory, 500);
