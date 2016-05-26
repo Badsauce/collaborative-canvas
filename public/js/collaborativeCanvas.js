@@ -33,6 +33,11 @@ function addClick(x, y, dragging, brush_color)
   unsentHistory.push({"x":x,"y":y,"drag":dragging,"color":brush_color});
 }
 
+function refresh(){
+  redraw();
+  emitUnsentHistory();
+}
+
 function redraw(){
   context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
@@ -42,7 +47,6 @@ function redraw(){
 
   drawHistory(canvasHistory);
   drawHistory(serverHistory);
-  emitUnsentHistory();
 }
 
 function drawHistory(history){
@@ -59,40 +63,6 @@ function drawHistory(history){
   }
 }
 
-function getHistory(){
-  return $.get('/collaborative_canvas/history/'+id, function( data ) {
-    if(data.history){
-      serverHistory = data.history;
-    }
-    redraw();
-    console.log('History set to server history');
-  });
-}
-
-function sendHistory(){
-  var sentHistoryLength = unsentHistory.length;
-
-  return $.ajax({
-    method: "POST",
-    url: "/collaborative_canvas/history",
-    data: JSON.stringify({'id':id,'history':unsentHistory}),
-    contentType: 'application/json',
-  }).done(function( data ) {
-    if(sentHistoryLength < unsentHistory.length) {
-      console.log('Slicing '+sentHistoryLength+' from unsent history of '+unsentHistory.length);
-      unsentHistory = unsentHistory.slice(sentHistoryLength);
-    }
-    else {
-      console.log('No unsent history clearing unsent array');
-      unsentHistory = [];
-    }
-    console.log('History written, receiving updated history');
-    getHistory().done( function(){
-      window.setTimeout(synchronizeHistory, 500);
-    });
-  });
-}
-
 function clearHistoryButton(){
   clearHistory();
   socket.emit('clear history', 0);
@@ -103,18 +73,7 @@ function clearHistory(){
   unsentHistory = [];
   serverHistory = [];
 
-  redraw();
-}
-
-function synchronizeHistory(){
-  if(unsentHistory.length > 0){
-    sendHistory();
-  }
-  else {
-    getHistory().done( function(){
-      syncTimerID = window.setTimeout(synchronizeHistory, 500);
-    });
-  }
+  refresh();
 }
 
 canvas.addEventListener('mousemove', function(e) {
@@ -123,14 +82,14 @@ canvas.addEventListener('mousemove', function(e) {
 
   if(isPainting){
     addClick(mouse.x, mouse.y, true, color);
-    redraw();
+    refresh();
   }
 }, false);
 
 canvas.addEventListener('mousedown', function(e) {
   isPainting = true;
   addClick(mouse.x, mouse.y);
-  redraw();
+  refresh();
 }, false);
 
 canvas.addEventListener('mouseup', function() {
@@ -164,7 +123,7 @@ function emitUnsentHistory(){
 socket.on('draw history', function(history){
   console.log("Got " + history.length + ' of history objects.');
   serverHistory.push.apply(serverHistory, history);
-  redraw();
+  refresh();
 });
 
 socket.on('clear history', clearHistory);
