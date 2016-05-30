@@ -21,7 +21,7 @@ var canvasHistory = [];
 var unsentHistory = [];
 var serverHistory = [];
 
-var color = '#00CC99';
+var color = randomColor();
 var isPainting;
 var id = $('#CollaborativeCanvas').data("history-id");
 var syncTimerID;
@@ -41,7 +41,6 @@ function refresh(){
 function redraw(){
   context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
-  context.strokeStyle = color;
   context.lineJoin = "round";
   context.lineWidth = 5;
 
@@ -51,15 +50,16 @@ function redraw(){
 
 function drawHistory(history){
   for(var i=0; i < history.length; i++) {
+    context.strokeStyle = history[i].color;
     context.beginPath();
     if(history[i].drag && i){
       context.moveTo(history[i-1].x, history[i-1].y);
      }else{
        context.moveTo(history[i].x-1, history[i].y);
      }
-     context.lineTo(history[i].x, history[i].y);
-     context.closePath();
-     context.stroke();
+    context.lineTo(history[i].x, history[i].y);
+    context.closePath();
+    context.stroke();
   }
 }
 
