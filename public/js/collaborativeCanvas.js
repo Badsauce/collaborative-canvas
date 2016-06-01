@@ -6,6 +6,9 @@ var clearButton = document.getElementById('clearHistory');
 //initalize socket.io
 var socket = io();
 
+//initalize shortid
+var shortid = require('shortid').generate();
+
 //initalize the canvas
 var context = canvas.getContext('2d');
 
@@ -23,14 +26,13 @@ var serverHistory = [];
 
 var color = randomColor();
 var isPainting;
-var id = $('#CollaborativeCanvas').data("history-id");
 var syncTimerID;
 
 
 function addClick(x, y, dragging, brush_color)
 {
-  canvasHistory.push({"x":x,"y":y,"drag":dragging,"color":brush_color});
-  unsentHistory.push({"x":x,"y":y,"drag":dragging,"color":brush_color});
+  canvasHistory.push({"x":x,"y":y,"drag":dragging,"color":brush_color,"id":shortid});
+  unsentHistory.push({"x":x,"y":y,"drag":dragging,"color":brush_color,"id":shortid});
 }
 
 function refresh(){

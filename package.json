@@ -8,11 +8,16 @@
   },
   "devDependencies": {
     "jshint": "^2.9.2",
-    "nodemon": "^1.9.2"
+    "nodemon": "^1.9.2",
+    "shortid": "^2.2.6",
+    "watchify": "^3.7.0"
   },
   "scripts": {
     "jshint-public": "jshint public/js/*",
     "jshint-index": "jshint index.js",
-    "jshint": "npm run jshint-index && npm run jshint-public"
+    "jshint": "npm run jshint-index && npm run jshint-public",
+    "browserify": "watchify public/js/collaborativeCanvas.js -o public/js/bundle.js",
+    "watch": "npm run browserify"
+
   }
 }
