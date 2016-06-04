@@ -1,3 +1,5 @@
+var userProfile = require('./userProfile');
+
 //Get elements we need
 var painting = document.getElementById('CanvasContainer');
 var canvas = document.getElementById('CollaborativeCanvas');
@@ -8,6 +10,7 @@ var socket = io();
 
 //initalize shortid
 var shortid = require('shortid').generate();
+var currentContextId = shortid;
 
 //initalize the canvas
 var context = canvas.getContext('2d');
@@ -23,6 +26,8 @@ var mouse = {x: 0, y: 0};
 var canvasHistory = [];
 var unsentHistory = [];
 var serverHistory = [];
+
+var userProfiles = {};
 
 var color = randomColor();
 var isPainting;
@@ -51,17 +56,32 @@ function redraw(){
 }
 
 function drawHistory(history){
+  userProfiles = {};
+
   for(var i=0; i < history.length; i++) {
+    currentContextId = history[i].id;
+
+    //catch edgecases where a user joins mid stroke
+    if(userProfiles[currentContextId] == undefined){
+      //store the previous stroke for this context
+      userProfiles[currentContextId] = {'x':history[i].x,'y':history[i].y};
+    }
+
     context.strokeStyle = history[i].color;
+
     context.beginPath();
+
     if(history[i].drag && i){
-      context.moveTo(history[i-1].x, history[i-1].y);
+      context.moveTo(userProfiles[currentContextId].x, userProfiles[currentContextId].y);
      }else{
        context.moveTo(history[i].x-1, history[i].y);
      }
     context.lineTo(history[i].x, history[i].y);
     context.closePath();
     context.stroke();
+
+    //store the previous stroke for this context
+    userProfiles[currentContextId] = {'x':history[i].x,'y':history[i].y};
   }
 }
 
